@@ -1,0 +1,24 @@
+---
+- name: Print machine OS family
+  ansible.builtin.debug:
+    var: ansible_facts['os_family']|lower
+
+- name: Install Java on Debian like OS
+  ansible.builtin.apt:
+    name: openjdk-11-jdk-headless
+    update_cache: yes
+  become: true
+  when: ansible_facts['os_family']|lower == 'debian'
+
+- name: Prevent Java from being upgraded
+  ansible.builtin.dpkg_selections:
+    name: java-common
+    selection: hold
+  become: true
+  when: ansible_facts['os_family']|lower == 'debian'
+
+- name: Install Java on RedHat like OS
+  ansible.builtin.yum:
+    name: java-11-openjdk-devel
+    state: present
+  when: ansible_facts['os_family']|lower == 'redhat'
