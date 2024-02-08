@@ -8,17 +8,49 @@
     name: openjdk-11-jdk-headless
     update_cache: yes
   become: true
-  when: ansible_facts['os_family']|lower == 'debian'
+#  when: ansible_facts['os_family']|lower == 'debian'
 
 - name: Prevent Java from being upgraded
   ansible.builtin.dpkg_selections:
     name: java-common
     selection: hold
   become: true
-  when: ansible_facts['os_family']|lower == 'debian'
 
-- name: Install Java on RedHat like OS
-  ansible.builtin.yum:
-    name: java-11-openjdk-devel
-    state: present
-  when: ansible_facts['os_family']|lower == 'redhat'
+#- name: Install Java on RedHat like OS
+#  ansible.builtin.yum:
+#    name: java-11-openjdk-devel
+#    state: present
+#  when: ansible_facts['os_family']|lower == 'redhat'
+
+- name: Create /etc/apt/keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+    owner: root
+  become: true
+
+- name: Get Jenkins repository key
+  ansible.builtin.get_url:
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    dest: /etc/apt/keyrings/jenkins-keyring.asc
+    owner: root
+  become: true
+
+- name: Create and add a line to a file /etc/apt/sources.list.d/jenkins.list
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/jenkins.list
+    line: deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/
+    create: yes
+    owner: root
+  become: true
+
+- name: Update cache
+  ansible.builtin.apt:
+    update_cache: yes
+  become: true
+
+- name: Install Jenkins
+  ansible.builtin.apt:
+    name: jenkins
+  become: true
