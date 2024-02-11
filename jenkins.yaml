@@ -2,3 +2,7 @@
 - hosts: jenkins_master
   roles:
     - jenkins
+
+- hosts: jenkins_node
+  roles:
+    - jenkins_node

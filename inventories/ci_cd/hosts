@@ -1,2 +1,2 @@
-jenkins_master ansible_user=vagrant ansible_host=192.168.62.2
-jenkins_worker ansible_user=vagrant ansible_host=192.168.62.3
+jenkins_master ansible_user=vagrant ansible_host=192.168.62.2 architecture=amd64 os_code_name=focal
+jenkins_node ansible_user=vagrant ansible_host=192.168.62.3 architecture=amd64 os_code_name=focal
